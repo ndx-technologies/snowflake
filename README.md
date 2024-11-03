@@ -1,7 +1,7 @@
 lock free snowflake id generation
 
 - 1024 generators
-- 4096 ids / second per generator
+- 4096 ids / milli-second per generator
 
 ## References
 

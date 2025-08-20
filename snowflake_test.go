@@ -3,6 +3,7 @@ package snowflake_test
 import (
 	"sync"
 	"testing"
+	"testing/synctest"
 
 	"github.com/ndx-technologies/snowflake"
 )
@@ -18,19 +19,19 @@ func BenchmarkGenerator(b *testing.B) {
 }
 
 func TestGenerator(t *testing.T) {
-	g := snowflake.NewGenerator(1)
+	synctest.Test(t, func(t *testing.T) {
+		g := snowflake.NewGenerator(1)
 
-	wg := sync.WaitGroup{}
-	wg.Add(10)
+		var wg sync.WaitGroup
 
-	for range 10 {
-		go func() {
-			defer wg.Done()
-			for range 1_000_000 {
-				g.Next()
-			}
-		}()
-	}
+		for range 10 {
+			wg.Go(func() {
+				for range 1_000_000 {
+					g.Next()
+				}
+			})
+		}
 
-	wg.Wait()
+		wg.Wait()
+	})
 }

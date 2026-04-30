@@ -15,13 +15,11 @@ const (
 // Generator of snowflake ids.
 // Lock free and thread safe.
 // Loops back sequence when it reaches the limit within the same time and generator id.
-type Generator struct {
-	state     uint64 // 42b time | 10b generator(empty) | 12b sequence
-	generator uint64 // 10b fixed generator part of id
-}
+// 42b time | 10b generator | 12b sequence
+type Generator struct{ state uint64 }
 
 func NewGenerator(generatorID uint16) *Generator {
-	return &Generator{generator: (uint64(generatorID) & generatorMask) << 12}
+	return &Generator{state: (uint64(generatorID) & generatorMask) << 12}
 }
 
 func (g *Generator) Next() uint64 {
@@ -36,7 +34,7 @@ func (g *Generator) Next() uint64 {
 		currentSeq := current & sequenceMask
 
 		if t > currentTime || currentSeq == sequenceMask {
-			state = t << timeShift
+			state = (t << timeShift) | (current & (generatorMask << 12))
 		} else {
 			state = current + 1
 		}
@@ -46,5 +44,5 @@ func (g *Generator) Next() uint64 {
 		}
 	}
 
-	return state | g.generator
+	return state
 }

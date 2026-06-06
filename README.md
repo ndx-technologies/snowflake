@@ -1,7 +1,3 @@
-<p align="center">
-  ✨ Sponsored by <a href="https://ndx.one/?ct=github">NDX AI Shopping Assistant</a>
-</p>
-
 lock-free snowflake id generation
 
 - 1024 generators
